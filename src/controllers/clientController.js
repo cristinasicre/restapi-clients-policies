@@ -5,6 +5,8 @@ const { CLIENTS_URL } = require('../properties/application.properties');
 
 function getClients(req, res) {
 
+
+
     let request_call = new Promise((resolve, reject) => {
         http.get(CLIENTS_URL, (response) => {
             let chunks_of_data = [];
