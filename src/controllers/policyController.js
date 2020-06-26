@@ -1,34 +1,51 @@
-var Policie = require('../models/policy');
 const http = require('http');
 const { POLICIES_URL } = require('../properties/application.properties');
 
 
 function getPolicies(req, res) {
 
-    let request_call = new Promise((resolve, reject) => {
-        http.get(POLICIES_URL, (response) => {
-            let chunks_of_data = [];
+    if (req.decoded.user) {
 
-            response.on('data', (fragments) => {
-                chunks_of_data.push(fragments);
+        const user = req.decoded.user;
+
+        if (typeof user.role !== "undefined" && (user.role === "user" || user.role === "admin")) {
+
+            let request_call = new Promise((resolve, reject) => {
+                http.get(POLICIES_URL, (response) => {
+                    let chunks_of_data = [];
+
+                    response.on('data', (fragments) => {
+                        chunks_of_data.push(fragments);
+                    });
+
+                    response.on('end', () => {
+                        let response_body = Buffer.concat(chunks_of_data);
+                        resolve(response_body.toString());
+                    });
+
+                    response.on('error', (error) => {
+                        reject(error);
+                    });
+                });
             });
 
-            response.on('end', () => {
-                let response_body = Buffer.concat(chunks_of_data);
-                resolve(response_body.toString());
+            request_call.then((response) => {
+                if (typeof response !== "undefined") {
+                    res.status(200).send(JSON.parse(response));
+                } else {
+                    res.status(404).send({ message: "Error: No results" });
+                }
+            }).catch((error) => {
+                res.status(500).send({ message: error });
             });
 
-            response.on('error', (error) => {
-                reject(error);
-            });
-        });
-    });
+        } else {
+            res.status(403).send({ message: `Error: You don't have permission to access this resource` });
+        }
 
-    request_call.then((response) => {
-        console.log(response);
-    }).catch((error) => {
-        console.log(error);
-    });
+    } else {
+        res.status(404).send({ message: `Error: you must authenticate to access this resource` });
+    }
 
 }
 
@@ -36,43 +53,57 @@ function getPolicies(req, res) {
 function getPoliciesByClientId(req, res) {
 
     const clientId = req.params.clientId;
+    console.log(req.decoded.user.id);
+    if (req.decoded.user) {
 
-    let request_call = new Promise((resolve, reject) => {
-        http.get(POLICIES_URL, (response) => {
-            let chunks_of_data = [];
+        const user = req.decoded.user;
 
-            response.on('data', (fragments) => {
-                chunks_of_data.push(fragments);
+        if (typeof user.role !== "undefined" && (user.id === clientId || user.role === "admin")) {
+
+            let request_call = new Promise((resolve, reject) => {
+                http.get(POLICIES_URL, (response) => {
+                    let chunks_of_data = [];
+
+                    response.on('data', (fragments) => {
+                        chunks_of_data.push(fragments);
+                    });
+
+                    response.on('end', () => {
+                        let response_body = Buffer.concat(chunks_of_data);
+                        resolve(response_body.toString());
+                    });
+
+                    response.on('error', (error) => {
+                        reject(error);
+                    });
+                });
             });
 
-            response.on('end', () => {
-                let response_body = Buffer.concat(chunks_of_data);
-                resolve(response_body.toString());
+            request_call.then((response) => {
+                if (response) {
+
+                    const policies = JSON.parse(response).policies.find(it => it.clientId === clientId);
+
+                    if (policies) {
+                        res.status(200).send(policies);
+                    } else {
+                        res.status(404).send({ message: `Error: No policies assigned to user with id '${clientId}'` });
+                    }
+
+                } else {
+                    res.status(404).send({ message: `Error: No results` });
+                }
+            }).catch((error) => {
+                res.status(500).send({ message: error });
             });
 
-            response.on('error', (error) => {
-                reject(error);
-            });
-        });
-    });
-
-    request_call.then((response) => {
-        if (!response.empty) {
-            
-            const policies = JSON.parse(response).policies.find(it => it.clientId === clientId);
-
-            if (policies) {
-                res.status(200).send(policies);
-            } else {
-                res.status(404).send({ message: `No policies assigned to user with id '${clientId}'` });
-            }
-            
         } else {
-            res.status(404).send({ message: `No results` });
+            res.status(403).send({ message: `Error: You don't have permission to access this resource` });
         }
-    }).catch((error) => {
-        console.log(error);
-    });
+
+    } else {
+        res.status(404).send({ message: `Error: you must authenticate to access this resource` });
+    }
 
 }
 

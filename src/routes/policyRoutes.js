@@ -1,9 +1,9 @@
 const app = require('express').Router();
 const policiesController = require("../controllers/policyController.js");
 const policyController = require('../controllers/policyController.js');
+const middleware = require("../controllers/authController.js");
 
-
-app.get('/', policiesController.getPolicies);
-app.get('/policies-by-user/:clientId', policyController.getPoliciesByClientId);
+app.get('/', middleware.ensureAuthenticated, policiesController.getPolicies);
+app.get('/by-user/:clientId', middleware.ensureAuthenticated, policyController.getPoliciesByClientId);
 
 module.exports = app;
