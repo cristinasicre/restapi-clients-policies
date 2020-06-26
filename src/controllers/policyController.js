@@ -30,7 +30,7 @@ function getPolicies(req, res) {
             });
 
             request_call.then((response) => {
-                if (typeof response !== "undefined") {
+                if (response) {
                     res.status(200).send(JSON.parse(response));
                 } else {
                     res.status(404).send({ message: "Error: No results" });
@@ -53,7 +53,7 @@ function getPolicies(req, res) {
 function getPoliciesByClientId(req, res) {
 
     const clientId = req.params.clientId;
-    console.log(req.decoded.user.id);
+
     if (req.decoded.user) {
 
         const user = req.decoded.user;

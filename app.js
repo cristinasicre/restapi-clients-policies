@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { PORT } = require('./src/properties/application.properties.js');
 
 const app = express();
 
@@ -9,7 +10,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 //Settings
-app.set('port', 3001);
+app.set('port', PORT);
 
 
 //Routes
