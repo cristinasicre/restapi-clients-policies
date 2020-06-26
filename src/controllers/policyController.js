@@ -2,6 +2,7 @@ const http = require('http')
 const { POLICIES_URL } = require('../properties/application.properties')
 
 function getPolicies(req, res) {
+
   if (req.decoded.user) {
     const user = req.decoded.user
 
@@ -39,6 +40,7 @@ function getPolicies(req, res) {
         .catch((error) => {
           res.status(500).send({ message: error })
         })
+
     } else {
       res.status(403).send({
         message: `Error: You don't have permission to access this resource`,
@@ -53,6 +55,7 @@ function getPolicies(req, res) {
 
 //Get the list of policies linked to a user id -> Can be accessed by users with role 'admin' and by the own user
 function getPoliciesByClientId(req, res) {
+
   const clientId = req.params.clientId
 
   if (req.decoded.user) {
@@ -102,6 +105,7 @@ function getPoliciesByClientId(req, res) {
         .catch((error) => {
           res.status(500).send({ message: error })
         })
+
     } else {
       res.status(403).send({
         message: `Error: You don't have permission to access this resource`,

@@ -3,10 +3,11 @@
 REST API Application that manages some information regarding insurance policies and company clients.
 
 
-
 ---
 
+
 ## Table of Contents 
+
 
 - [Installation](#installation)
 - [Dependencies](#Dependencies)
@@ -87,10 +88,10 @@ Get a list of all the clients
 * `GET /clients/`
 
 
+
 Get user data filtered by user id -> Can be accessed by users with role 'users' and 'admin'
 
 * `GET /clients/by-id/:id`
-
 
 Get user data filtered by user name -> Can be accessed by users with role 'users' and 'admin'
 
@@ -187,3 +188,4 @@ Tests defined :
 - *Simple Unit Test* : We check if port was assined to our express configuration correctly.
 - *Auth + Tokenize Endpoints E2E Test*: First we obtain the token and then we use it in two other steps and obtain the correct date having used the token we have previously generated.
 - *Client integration Test* and *Policy integration Test*: Here we want to verify that we have configured our token verification function correctly and handle the possibility of a request coming in without a header.
+
